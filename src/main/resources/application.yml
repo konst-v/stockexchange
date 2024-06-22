@@ -1,0 +1,10 @@
+spring:
+    application:
+        name: stockexchange
+        datasource:
+            driver-class-name:
+            url:
+            password:
+            username:
+    profiles:
+        active: prod, local
