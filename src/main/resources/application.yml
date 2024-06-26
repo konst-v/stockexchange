@@ -6,7 +6,6 @@ spring:
             url:
             password:
             username:
-        topic_name: notify-topic
     profiles:
         active: prod, local
     kafka:
@@ -20,3 +19,4 @@ spring:
             value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
             properties:
                 spring.json.trusted.packages: "com.example.stockexchange.dto"
+        topic-name: notify-transaction

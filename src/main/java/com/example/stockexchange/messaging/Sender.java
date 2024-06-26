@@ -10,10 +10,10 @@ import org.springframework.stereotype.Component;
 public class Sender {
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    @Value("${topic_name:notify-topic}")
-    private String topic;
+    @Value("${spring.kafka.topic-name}")
+    private String topicName;
 
     public void send(Object message) {
-        kafkaTemplate.send(topic, message);
+        kafkaTemplate.send(topicName, message);
     }
 }

@@ -9,12 +9,12 @@ import org.springframework.kafka.config.TopicBuilder;
 @Configuration
 public class KafkaConfig {
 
-    @Value("${topic_name:notify-topic}")
-    private String notifyTopicName;
+    @Value("${spring.kafka.topic-name}")
+    private String topicName;
 
     @Bean
     public NewTopic createTopic() {
-        return TopicBuilder.name(notifyTopicName)
+        return TopicBuilder.name(topicName)
                 .partitions(1)
                 .replicas(1)
                 .build();
