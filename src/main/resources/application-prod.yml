@@ -4,3 +4,5 @@ spring:
         url: ${SPRING_DATASOURCE_URL}
         username: ${SPRING_DATASOURCE_USERNAME}
         password: ${SPRING_DATASOURCE_PASSWORD}
+    kafka:
+        bootstrap-servers: "kafka:29092"

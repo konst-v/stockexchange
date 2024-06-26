@@ -1,17 +1,23 @@
 package com.example.stockexchange.service;
 
 import com.example.stockexchange.entity.Item;
+import com.example.stockexchange.mapper.TransactionMapper;
+import com.example.stockexchange.messaging.Sender;
 import com.example.stockexchange.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 import static com.example.stockexchange.constants.ItemStatus.SOLD;
-import static java.lang.StringTemplate.STR;
 
 @Service
 @RequiredArgsConstructor
 public class ItemService {
     private final ItemRepository itemRepository;
+    private final Sender sender;
+    private final TransactionMapper transactionMapper;
 
     public Item getItemById(Long id) {
         return itemRepository.findById(id)
@@ -26,22 +32,22 @@ public class ItemService {
         Item foundItem = getItemById(item.getId());
         checkSold(foundItem);
 
-        if(item.getName() != null) {
-            foundItem.setName(item.getName());
-        }
-        if (item.getPrice() != null) {
-            foundItem.setPrice(item.getPrice());
-        }
-        if (item.getQuantity() != null) {
-            foundItem.setQuantity(item.getQuantity());
-        }
+        Optional.ofNullable(item.getName())
+                .ifPresent(o -> foundItem.setName(o));
+        Optional.ofNullable(item.getPrice())
+                .ifPresent(o -> foundItem.setPrice(o));
+        Optional.ofNullable(item.getQuantity())
+                .ifPresent(o -> foundItem.setQuantity(o));
+
         return itemRepository.save(foundItem);
     }
 
+    @Transactional
     public Item sellItem(Long id) {
         Item foundItem = getItemById(id);
         checkSold(foundItem);
         foundItem.setStatus(SOLD);
+        sender.send(transactionMapper.mapItemToDto(foundItem));
         return itemRepository.save(foundItem);
     }
 
