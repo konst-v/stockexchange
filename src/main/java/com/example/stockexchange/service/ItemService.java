@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 import static com.example.stockexchange.constants.ItemStatus.SOLD;
+import static com.example.stockexchange.constants.KafkaTopics.TRANSACTION_TOPIC;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +22,7 @@ public class ItemService {
 
     public Item getItemById(Long id) {
         return itemRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(STR."Item id \{id} not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Item id %s not found".formatted(id)));
     }
 
     public Item createItem(Item item) {
@@ -47,7 +48,7 @@ public class ItemService {
         Item foundItem = getItemById(id);
         checkSold(foundItem);
         foundItem.setStatus(SOLD);
-        sender.send(transactionMapper.mapItemToDto(foundItem));
+        sender.send(TRANSACTION_TOPIC, transactionMapper.mapItemToDto(foundItem));
         return itemRepository.save(foundItem);
     }
 
@@ -59,7 +60,7 @@ public class ItemService {
 
     private static void checkSold(Item item) {
         if (item.getStatus() == SOLD) {
-            throw new IllegalArgumentException(STR."No operations allowed on SOLD item \{item.getId()}");
+            throw new IllegalArgumentException("No operations allowed on SOLD item %s".formatted(item.getId()));
         }
     }
 }
